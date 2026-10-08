@@ -238,13 +238,13 @@ Only intelligible speech is transcribed. Radio transmissions received in the coc
 | Time | Speaker | Transcript |
 |---|---|---|
 | 10:36:00 | AUTO | “One hundred.” |
-| 10:36:07 | AUTO | “Fifty.” |
-| 10:36:10 | AUTO | “Forty.” |
-| 10:36:13 | AUTO | “Thirty.” |
-| 10:36:16 | AUTO | “Twenty.” |
-| 10:36:19 | AUTO | “Retard.” |
-| 10:36:24 | FO | “We’re floating.” |
-| 10:36:28 | CAPT | “Come on.” |
+| 10:36:22 | AUTO | “Fifty.” |
+| 10:36:24 | AUTO | “Forty.” |
+| 10:36:26 | AUTO | “Thirty.” |
+| 10:36:28 | AUTO | “Twenty.” |
+| 10:36:29 | AUTO | “Retard.” |
+| 10:36:30 | FO | “We’re floating.” |
+| 10:36:31 | CAPT | “Come on.” |
 | 10:36:32 | FO | “Long.” |
 | 10:36:36 | SOUND | [Touchdown noise.] |
 | 10:36:40 | CAPT | “Reverse.” |
