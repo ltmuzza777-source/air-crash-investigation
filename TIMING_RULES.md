@@ -55,8 +55,8 @@ Deliveries and automatic releases appear together at the start of the day, so th
 ### Proposed deadline for Case 001
 
 - Proposed: Day 14. CASE_001_EVIDENCE_SCHEDULE.md is currently drafted around this deadline, but it is still a proposal pending testing.
-- With one request per day, a Day 14 deadline allows at most 13 requests, since a request sent on Day 14 could not arrive in time. The two-active limit and multi-day turnarounds mean the practical number is lower. The evidence schedule estimates roughly 8 to 10 requests, with a core route of about 6 or 7.
-- This gives the player room to follow leads and recover from a wrong one, without allowing every item in the catalogue to be requested.
+- With one request per day, a Day 14 deadline allows at most 13 requests, since a request sent on Day 14 could not arrive in time. The two-active limit and multi-day turnarounds mean the practical number is lower. The evidence schedule estimates roughly 8 to 10 requests.
+- The corrected seven-request core route in the evidence schedule finishes on Day 13 and keeps both slots busy for most of the case. That leaves little room for wrong leads, so Day 14 may be too tight and should be reviewed in playtesting.
 - The draft schedule uses request durations from 1 to 5 days. Both the deadline and durations should be tuned through testing. A shorter deadline (for example Day 10) increases pressure; a longer one (for example Day 21) makes the case more forgiving.
 
 ## 6. Worked example (deadline Day 14)
@@ -79,11 +79,10 @@ The one-new-request-per-day and two-active-request limits hold throughout. This 
 
 ## 8. Open decisions
 
-- Final length of the Case 001 deadline (Day 14 is proposed).
+- Final length of the Case 001 deadline (Day 14 is proposed, but the corrected core route finishes on Day 13, so it may be too tight).
 - Final request durations for Case 001. The draft evidence schedule proposes 1 to 5 days per request; these need playtesting.
 - Whether any opening evidence should accompany the Day 1 brief. The current schedule assumes none, which is still to be confirmed.
 - Whether the player can send a request on Day 1 at all, given the brief contains no data to follow up.
-- Whether the example core route in CASE_001_EVIDENCE_SCHEDULE.md respects the one-request-per-day and two-active limits. As drafted it sends two requests on Day 2 and would need a request on Day 8 while both slots are active, so it needs correcting.
 
 ## 9. Resolved decisions
 
@@ -94,6 +93,7 @@ The one-new-request-per-day and two-active-request limits hold throughout. This 
 | What happens on Day 1 of Case 001? | A simple office-style brief plus the game disclaimer. |
 | Can a request arrive on the deadline day? | Yes. Arrival at the start of Day X is allowed; arrival after Day X is blocked. |
 | What is released automatically in Case 001? | Drafted in CASE_001_EVIDENCE_SCHEDULE.md (Days 2 to 6, nothing from Day 7). Still subject to testing. |
+| Does the example core route respect the request limits? | Yes. It was rebuilt in CASE_001_EVIDENCE_SCHEDULE.md and checked against both limits and the dependencies. |
 
 ## 10. Revision log
 
@@ -102,3 +102,4 @@ The one-new-request-per-day and two-active-request limits hold throughout. This 
 | 2026-10-12 | Initial draft of timing rules. |
 | 2026-10-12 | Recorded decisions: forced submission, irreversible requests with confirmation, Day 1 brief and disclaimer. Proposed Day 14 deadline. |
 | 2026-10-12 | Linked the Case 001 evidence schedule and request catalogue. Added arrival-on-deadline-day rule and request prerequisites. Updated open decisions to reflect the drafted schedule and flagged problems in its example route. |
+| 2026-10-12 | Resolved the example-route problem after the schedule was corrected. Noted that the core route finishes on Day 13, so the Day 14 deadline may be tight. |

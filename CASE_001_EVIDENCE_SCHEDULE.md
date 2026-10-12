@@ -149,26 +149,31 @@ These requests should return normal or non-conclusive results so the player can 
 
 ## 7. Deadline check
 
-With two active slots and an average duration of about 2 to 3 days, the player can receive roughly 8 to 10 requests by Day 14. A core route needs about 6 or 7 requests, leaving room for wrong leads.
+With two active slots and an average duration of about 2 to 3 days, the player can receive roughly 8 to 10 requests by Day 14. The seven-request core route below respects every rule, but it finishes on Day 13 and keeps both slots busy for most of the case, so it leaves little room for wrong leads. The deadline, the durations of the core requests, or the length of the longest chain (DAT-02 then CMP-07) should be reviewed in testing.
 
-Example core route (to be tested):
+Example core route (to be tested). Rules checked: at most one request sent per day, at most two active at any time, dependencies delivered before the dependent request is sent.
 
-| Day sent | Request | Arrives |
-|---|---|---|
-| 2 | SYS-07 | 5 |
-| 2 | REF-05 | 3 |
-| 3 | REF-12 | 4 |
-| 4 | DAT-02 | 7 |
-| 5 | LAB-05 (after SYS-07) | 9 |
-| 7 | CMP-07 (after REF-12 and DAT-02) | 12 |
-| 8 | APT-04 | 11 |
+| Day sent | Request | Duration | Arrives | Active after sending | Dependency check |
+|---|---|---|---|---|---|
+| 2 | DAT-02 | 3 | 5 | DAT-02 | None |
+| 3 | REF-12 | 1 | 4 | DAT-02, REF-12 | None |
+| 4 | SYS-07 | 3 | 7 | DAT-02, SYS-07 | REF-12 arrived Day 4, slot freed |
+| 5 | CMP-07 | 5 | 10 | SYS-07, CMP-07 | REF-12 and DAT-02 delivered |
+| 7 | LAB-05 | 4 | 11 | CMP-07, LAB-05 | SYS-07 delivered Day 7 |
+| 10 | APT-04 | 3 | 13 | LAB-05, APT-04 | CMP-07 arrived Day 10, slot freed |
+| 11 | REF-05 | 1 | 12 | APT-04, REF-05 | LAB-05 arrived Day 11, slot freed |
 
-This route finishes by Day 12 and uses fewer than the maximum active slots, so it should fit the deadline. It must be rechecked once the final content exists.
+Notes on the route:
+
+- No request can be sent on Day 6, Days 8 and 9, because both slots are full.
+- The last item arrives on Day 13, one day before the deadline.
+- CMP-07 is the longest chain: DAT-02 (3 days) must arrive before CMP-07 (5 days) can be sent, so it cannot arrive before Day 10 even if sent as early as possible.
+- REF-05 is last here because nothing else depends on it, but a player may reasonably request it earlier.
 
 ## 8. Open items
 
 - Confirm that no automatic release should occur on Day 1.
-- Test the example route against actual slot use and active-request limits.
+- Playtest the example route and decide whether Day 14 is long enough, given that it finishes on Day 13 with no room for a wrong lead.
 - Write each request's actual returned content, which must stay consistent with the case facts.
 - Verify technical details listed in CASE_001_OVERVIEW.md before writing hydraulic and laboratory results.
 - Decide whether any requests should be unavailable until another is delivered beyond those in section 6.
@@ -179,3 +184,4 @@ This route finishes by Day 12 and uses fewer than the maximum active slots, so i
 | Date | Change |
 |---|---|
 | 2026-10-12 | Initial draft of Case 001 evidence schedule. |
+| 2026-10-12 | Rebuilt the example core route in section 7 so it respects the one-request-per-day and two-active limits. The core route now finishes on Day 13 rather than Day 12, and the deadline is flagged for testing. |
