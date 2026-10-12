@@ -62,7 +62,7 @@ Time advances only when the player chooses to end the current day. Reading, revi
 
 Advancing a day progresses pending requests and any scheduled evidence releases. New information arrives only when its release or completion conditions are met; ending a day does not guarantee a delivery. The exact order of steps, day numbering, and deadline handling are defined in TIMING_RULES.md.
 
-Each case has a deadline. The narrative stakes are the danger of another similar accident if the underlying cause remains unresolved. The available number of days is one component of case difficulty. Exact deadlines and request durations are set individually for each case. Case 001 currently proposes a Day 14 deadline.
+Each case has a deadline. The narrative stakes are the danger of another similar accident if the underlying cause remains unresolved. The available number of days is one component of case difficulty. Exact deadlines and request durations are set individually for each case. Case 001 has a Day 19 deadline (set 2026-10-12), which is still subject to playtesting.
 
 ## Core Gameplay Loop
 
@@ -129,7 +129,7 @@ Future expansion includes additional cases and eyewitness evidence.
 
 The following are not yet agreed and should not be treated as confirmed features:
 
-- Case 001's final deadline, request durations, and the content of each requestable item.
+- Case 001's final request durations and the content of each requestable item. (The Day 19 deadline is set but remains subject to playtesting.)
 - How the player browses and selects requests, and how specific a request must be.
 - The report editor, assessment method, acceptance criteria, and rejection feedback.
 - Whether a second accident is a guaranteed scripted event or a possible narrative consequence.

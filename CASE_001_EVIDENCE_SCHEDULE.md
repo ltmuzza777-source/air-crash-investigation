@@ -5,11 +5,11 @@ Author-only: Contains roles and intended solution logic. Must not be shown to th
 
 Related documents: TIMING_RULES.md, EVIDENCE_REQUEST_CATALOGUE.md, CASE_001_OVERVIEW.md, CASE_DESIGN_TEMPLATE.md
 
-This document plans what the player receives automatically each day and what they can request in Case 001. Request IDs refer to EVIDENCE_REQUEST_CATALOGUE.md. Durations and the deadline are proposals and need testing.
+This document plans what the player receives automatically each day and what they can request in Case 001. Request IDs refer to EVIDENCE_REQUEST_CATALOGUE.md. Durations are proposals and need testing. The deadline is set at Day 19 but is still subject to playtesting.
 
 ## 1. Timing assumptions
 
-- Proposed deadline: Day 14.
+- Deadline: Day 19.
 - One new request per day; at most two active requests.
 - A request sent on Day N with duration D arrives at the start of Day N + D.
 - Requests are irreversible and need player confirmation.
@@ -149,7 +149,7 @@ These requests should return normal or non-conclusive results so the player can 
 
 ## 7. Deadline check
 
-With two active slots and an average duration of about 2 to 3 days, the player can receive roughly 8 to 10 requests by Day 14. The seven-request core route below respects every rule, but it finishes on Day 13 and keeps both slots busy for most of the case, so it leaves little room for wrong leads. The deadline, the durations of the core requests, or the length of the longest chain (DAT-02 then CMP-07) should be reviewed in testing.
+With two active slots and an average duration of about 2 to 3 days, the player can receive roughly 12 to 14 requests by Day 19. The seven-request core route below respects every rule and finishes on Day 13, which leaves about six spare days for wrong leads, rule-out requests, and report writing. The deadline, the durations of the core requests, and the length of the longest chain (DAT-02 then CMP-07) should still be reviewed in testing. If Day 19 proves too relaxed, shorten it.
 
 Example core route (to be tested). Rules checked: at most one request sent per day, at most two active at any time, dependencies delivered before the dependent request is sent.
 
@@ -166,14 +166,14 @@ Example core route (to be tested). Rules checked: at most one request sent per d
 Notes on the route:
 
 - No request can be sent on Day 6, Days 8 and 9, because both slots are full.
-- The last item arrives on Day 13, one day before the deadline.
+- The last item arrives on Day 13, six days before the Day 19 deadline.
 - CMP-07 is the longest chain: DAT-02 (3 days) must arrive before CMP-07 (5 days) can be sent, so it cannot arrive before Day 10 even if sent as early as possible.
 - REF-05 is last here because nothing else depends on it, but a player may reasonably request it earlier.
 
 ## 8. Open items
 
 - Confirm that no automatic release should occur on Day 1.
-- Playtest the example route and decide whether Day 14 is long enough, given that it finishes on Day 13 with no room for a wrong lead.
+- Playtest the example route and decide whether Day 19 is the right length, given that the core route finishes on Day 13 with six spare days.
 - Write each request's actual returned content, which must stay consistent with the case facts.
 - Verify technical details listed in CASE_001_OVERVIEW.md before writing hydraulic and laboratory results.
 - Decide whether any requests should be unavailable until another is delivered beyond those in section 6.
@@ -185,3 +185,4 @@ Notes on the route:
 |---|---|
 | 2026-10-12 | Initial draft of Case 001 evidence schedule. |
 | 2026-10-12 | Rebuilt the example core route in section 7 so it respects the one-request-per-day and two-active limits. The core route now finishes on Day 13 rather than Day 12, and the deadline is flagged for testing. |
+| 2026-10-12 | Changed the deadline from Day 14 to Day 19. Updated the timing assumptions, deadline check, route notes, and open items. |
