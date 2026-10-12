@@ -1,0 +1,75 @@
+{
+  "_status": "DRAFT for review. Fictional values. Author-only. Not verified against Airbus/NTSB data.",
+  "case_id": "CASE_001",
+  "flight": {
+    "operator": "BlueWing Airlines (fictional)",
+    "number": "BW96",
+    "route": "Hobart (YMHB) to Melbourne (YMML)",
+    "aircraft": "Airbus A320-232",
+    "year": 2012,
+    "date": "TBD (proposed 14 March 2012)",
+    "local_takeoff_time": "TBD (proposed 10:42 AEDT)",
+    "registration": "VH-BWX (fictional)"
+  },
+  "people": {
+    "crew_flight": 2,
+    "crew_cabin": 4,
+    "passengers": 112,
+    "fatalities": 0,
+    "minor_injuries": 5,
+    "serious_injuries": 0
+  },
+  "runway": {
+    "landing_runway": "12",
+    "length_m": 2251,
+    "surface": "dry asphalt",
+    "wind": "light headwind, 8 kt",
+    "declared_landing_distance_m": "TBD verify historical value",
+    "overrun_area": "unpaved grass/soil, about 180 m before fence"
+  },
+  "timeline": [
+    {"t": "T+0:00", "event": "Takeoff, normal"},
+    {"t": "T+0:35", "event": "Gear retraction; right main gear door hose ruptures; green fluid leaks"},
+    {"t": "T+0:40", "event": "Green pressure falls; gear retraction disrupted"},
+    {"t": "T+2:40", "event": "Yellow system overheat (about 2 min after leak, provisional)"},
+    {"t": "T+3:30", "event": "Crew isolates yellow supply (PTU/pump action, wording TBD)"},
+    {"t": "T+4:00", "event": "Crew decides to return to Hobart"},
+    {"t": "T+14:00", "event": "Approach high and fast; gear extended (method TBD)"},
+    {"t": "T+17:30", "event": "Touchdown about 1,000 m past threshold"}
+  ],
+  "hydraulics": {
+    "initiating_failure": "Green flexible hose, right main gear door; localised deterioration at repeatedly flexing section",
+    "maintenance_error_established": false,
+    "ptu_faulty": false,
+    "fluid_loss_note": "Quantities TBD"
+  },
+  "performance": {
+    "landing_mass_kg": 64200,
+    "max_landing_mass_kg": 64500,
+    "approach_speed_kt": "TBD (provisional 145-150 above Vref)",
+    "touchdown_ground_speed_kt": 150,
+    "touchdown_point_m": 1000,
+    "remaining_runway_m": 1251,
+    "assumed_average_decel_m_s2": 2.1,
+    "computed_speed_at_runway_end_kt": 51,
+    "computed_distance_beyond_runway_m": 219,
+    "stopping_means_available": "TBD verify: limited accumulator braking, no anti-skid, spoiler and reverser availability to confirm"
+  },
+  "crew": {
+    "belief": "Go-around unsafe (belief only, not proven technically impossible)",
+    "captain_hours_total": "TBD",
+    "fo_hours_total": "TBD"
+  },
+  "outcome": {
+    "fire": false,
+    "damage": "Substantial landing gear and lower fuselage damage"
+  },
+  "open_checks": [
+    "Warning order/wording",
+    "Gear extension method",
+    "Flap/slat state",
+    "Declared landing distance",
+    "Brake accumulator capacity",
+    "PTU modification applicability"
+  ]
+}
