@@ -2,7 +2,7 @@
 
 Status: Working design draft.
 
-Related documents: GAME_OVERVIEW.md, CASE_DESIGN_TEMPLATE.md, FINDINGS_AND_SUBMISSION_SYSTEM.md
+Related documents: GAME_OVERVIEW.md, CASE_DESIGN_TEMPLATE.md, FINDINGS_AND_SUBMISSION_SYSTEM.md, CASE_001_EVIDENCE_SCHEDULE.md, EVIDENCE_REQUEST_CATALOGUE.md
 
 This document defines how in-game days, request delivery, automatic releases, and the deadline work. It builds on the limits already agreed in GAME_OVERVIEW.md (one new request per day, two active requests at most, three submissions maximum, player-controlled day advancement).
 
@@ -12,7 +12,7 @@ This document defines how in-game days, request delivery, automatic releases, an
 - A deadline of "Day X" means Day X is the last day the player can act on.
 - Day 1 is a simple verbal-style brief, as if the player were sitting in the office and being told about the incident. For Case 001 this is along the lines of: "A plane overran a runway at Hobart."
 - Day 1 also shows the game disclaimer: this is a fictional game and not a reconstruction of a real accident.
-- Day 1 contains only the brief and disclaimer. Any opening evidence is decided in the release schedule (see section 8).
+- Day 1 contains only the brief and disclaimer. Any opening evidence is decided in the case's release schedule (see section 8). The current Case 001 draft schedule releases no data on Day 1; the first data arrives on Day 2.
 
 ## 2. During a day
 
@@ -28,7 +28,9 @@ This document defines how in-game days, request delivery, automatic releases, an
 - The prompt also shows the exact arrival day, so the player sees the cost before committing.
 - A request sent on Day N with a duration of D days arrives at the start of Day N + D.
 - Example: a 1-day request sent on Day 3 arrives at the start of Day 4.
+- A request that arrives at the start of the deadline day (N + D = X) is allowed, because the player can still act on Day X.
 - On delivery the request's slot frees, so the player can send a new request that same day (if they have not already used that day's request).
+- Some requests have prerequisites (for example, a laboratory test that needs a component examination delivered first). These are set per case in the evidence schedule, and the request stays unavailable until the prerequisite has been delivered.
 
 ## 4. Ending a day
 
@@ -52,10 +54,10 @@ Deliveries and automatic releases appear together at the start of the day, so th
 
 ### Proposed deadline for Case 001
 
-- Proposed: Day 14. This is a suggestion pending discussion of what is released each day.
-- With one request per day, a Day 14 deadline allows at most 13 requests, since a request sent on Day 14 could not arrive in time. The two-active limit and multi-day turnarounds mean the practical number will be lower.
+- Proposed: Day 14. CASE_001_EVIDENCE_SCHEDULE.md is currently drafted around this deadline, but it is still a proposal pending testing.
+- With one request per day, a Day 14 deadline allows at most 13 requests, since a request sent on Day 14 could not arrive in time. The two-active limit and multi-day turnarounds mean the practical number is lower. The evidence schedule estimates roughly 8 to 10 requests, with a core route of about 6 or 7.
 - This gives the player room to follow leads and recover from a wrong one, without allowing every item in the catalogue to be requested.
-- It should be tuned after the release schedule and request durations are set. A shorter deadline (for example Day 10) increases pressure; a longer one (for example Day 21) makes the case more forgiving.
+- The draft schedule uses request durations from 1 to 5 days. Both the deadline and durations should be tuned through testing. A shorter deadline (for example Day 10) increases pressure; a longer one (for example Day 21) makes the case more forgiving.
 
 ## 6. Worked example (deadline Day 14)
 
@@ -66,7 +68,7 @@ Deliveries and automatic releases appear together at the start of the day, so th
 | 3 | A arrives, slot frees; send Request C (1 day) | B, C (C due Day 4) |
 | 4 | C arrives; send Request D | B, D |
 
-The one-new-request-per-day and two-active-request limits hold throughout.
+The one-new-request-per-day and two-active-request limits hold throughout. This example is generic and does not reflect Case 001's schedule, where no requests are sent on Day 1 because no data has arrived yet.
 
 ## 7. Rationale
 
@@ -78,8 +80,10 @@ The one-new-request-per-day and two-active-request limits hold throughout.
 ## 8. Open decisions
 
 - Final length of the Case 001 deadline (Day 14 is proposed).
-- Request durations for Case 001, set per case in CASE_DESIGN_TEMPLATE.md.
-- What evidence is released automatically on each day after Day 1, and whether any opening evidence accompanies the Day 1 brief.
+- Final request durations for Case 001. The draft evidence schedule proposes 1 to 5 days per request; these need playtesting.
+- Whether any opening evidence should accompany the Day 1 brief. The current schedule assumes none, which is still to be confirmed.
+- Whether the player can send a request on Day 1 at all, given the brief contains no data to follow up.
+- Whether the example core route in CASE_001_EVIDENCE_SCHEDULE.md respects the one-request-per-day and two-active limits. As drafted it sends two requests on Day 2 and would need a request on Day 8 while both slots are active, so it needs correcting.
 
 ## 9. Resolved decisions
 
@@ -88,6 +92,8 @@ The one-new-request-per-day and two-active-request limits hold throughout.
 | Can the player decline to submit at the deadline? | No. The player must submit a report even if unfinished or wrong. |
 | Can the player cancel an active request? | No. Requests are irreversible, and the player must confirm before sending. |
 | What happens on Day 1 of Case 001? | A simple office-style brief plus the game disclaimer. |
+| Can a request arrive on the deadline day? | Yes. Arrival at the start of Day X is allowed; arrival after Day X is blocked. |
+| What is released automatically in Case 001? | Drafted in CASE_001_EVIDENCE_SCHEDULE.md (Days 2 to 6, nothing from Day 7). Still subject to testing. |
 
 ## 10. Revision log
 
@@ -95,3 +101,4 @@ The one-new-request-per-day and two-active-request limits hold throughout.
 |---|---|
 | 2026-10-12 | Initial draft of timing rules. |
 | 2026-10-12 | Recorded decisions: forced submission, irreversible requests with confirmation, Day 1 brief and disclaimer. Proposed Day 14 deadline. |
+| 2026-10-12 | Linked the Case 001 evidence schedule and request catalogue. Added arrival-on-deadline-day rule and request prerequisites. Updated open decisions to reflect the drafted schedule and flagged problems in its example route. |
