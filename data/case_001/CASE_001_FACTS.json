@@ -50,9 +50,9 @@
     "touchdown_ground_speed_kt": 150,
     "touchdown_point_m": 1000,
     "remaining_runway_m": 1251,
-    "assumed_average_decel_m_s2": 2.1,
-    "computed_speed_at_runway_end_kt": 51,
-    "computed_distance_beyond_runway_m": 219,
+    "assumed_average_decel_m_s2": 2.2,
+    "computed_speed_at_runway_end_kt": 40,
+    "computed_distance_beyond_runway_m": 133,
     "stopping_means_available": "TBD verify: limited accumulator braking, no anti-skid, spoiler and reverser availability to confirm"
   },
   "crew": {
