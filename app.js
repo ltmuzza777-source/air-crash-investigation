@@ -2,7 +2,7 @@ const app = document.querySelector("#app");
 let state;
 
 function resetState() {
-  state = { screen: "menu", day: 1, delivered: [], receivedOrder: {}, active: [], requested: {}, log: [], sentToday: false, attempts: 0, notice: null, selectedTab: "evidence", modal: null, evidenceSearch: "", evidenceSort: "newest" };
+  state = { screen: "menu", day: 1, delivered: [], receivedOrder: {}, active: [], requested: {}, log: [], sentToday: false, attempts: 0, notice: null, selectedTab: "evidence", modal: null, evidenceSearch: "", evidenceSort: "newest", requestSearch: "" };
 }
 resetState();
 
@@ -128,7 +128,9 @@ function renderEvidence(items) {
   return `<div class="panel"><div class="panel-heading"><div><div class="eyebrow">Received material</div><h2>Evidence desk</h2><p class="muted">Open a document to inspect the records, tables, and observations it contains.</p></div></div><div class="evidence-tools"><label class="search-field"><span class="sr-only">Search received evidence</span><input id="evidence-search" type="search" value="${esc(state.evidenceSearch)}" placeholder="Search code or evidence title"></label><label class="sort-field"><span class="sr-only">Sort evidence</span><select id="evidence-sort"><option value="newest" ${state.evidenceSort === "newest" ? "selected" : ""}>Newest first</option><option value="oldest" ${state.evidenceSort === "oldest" ? "selected" : ""}>Oldest first</option></select></label></div><p class="muted small">Showing ${sorted.length} of ${items.length} received document${items.length === 1 ? "" : "s"}.</p><div class="evidence-list">${sorted.length ? sorted.map(item => `<article class="evidence-card"><div class="card-top"><div><div class="code">${esc(item.code)}</div><h3>${esc(item.title)}</h3></div><span class="tag">received</span></div><p class="muted">Document package received and available for review.</p><button class="secondary" data-open-doc="${esc(item.code)}">Open document</button></article>`).join("") : '<p class="muted">No received evidence matches that search.</p>'}</div></div>`;
 }
 function renderRequests(items) {
-  return `<div class="panel"><div class="panel-heading"><div><div class="eyebrow">Choose carefully</div><h2>Request evidence</h2><p class="muted">The arrival day is shown before you commit. Requests cannot be cancelled. The contents are not known until the package arrives.</p></div></div><div class="request-list">${items.map(request => { const check = canRequest(request); return `<article class="request-card"><div class="card-top"><div><div class="code">${request.code}</div><h3>${esc(request.title)}</h3></div><span class="tag">${request.duration} day${request.duration === 1 ? "" : "s"}</span></div><div class="request-meta"><span class="tag">arrives Day ${state.day + request.duration}</span></div><p class="muted">A case-specific ${esc(request.title.toLowerCase())} package will be prepared and delivered.</p><div class="request-actions"><span class="locked">${check.ok ? "Ready to request" : esc(check.reason)}</span><button class="secondary" data-request="${request.code}" ${check.ok ? "" : "disabled"}>Request</button></div></article>`; }).join("")}</div></div>`;
+  const query = state.requestSearch.trim().toLowerCase();
+  const filtered = items.filter(request => !query || `${request.code} ${request.title}`.toLowerCase().includes(query));
+  return `<div class="panel"><div class="panel-heading"><div><div class="eyebrow">Choose carefully</div><h2>Request evidence</h2><p class="muted">The arrival day is shown before you commit. Requests cannot be cancelled. The contents are not known until the package arrives.</p></div></div><div class="evidence-tools"><label class="search-field"><span class="sr-only">Search available requests</span><input id="request-search" type="search" value="${esc(state.requestSearch)}" placeholder="Search request code or name"></label></div><p class="muted small">Showing ${filtered.length} of ${items.length} available request${items.length === 1 ? "" : "s"}.</p><div class="request-list">${filtered.map(request => { const check = canRequest(request); return `<article class="request-card"><div class="card-top"><div><div class="code">${request.code}</div><h3>${esc(request.title)}</h3></div><span class="tag">${request.duration} day${request.duration === 1 ? "" : "s"}</span></div><div class="request-meta"><span class="tag">arrives Day ${state.day + request.duration}</span></div><p class="muted">A case-specific ${esc(request.title.toLowerCase())} package will be prepared and delivered.</p><div class="request-actions"><span class="locked">${check.ok ? "Ready to request" : esc(check.reason)}</span><button class="secondary" data-request="${request.code}" ${check.ok ? "" : "disabled"}>Request</button></div></article>`; }).join("") || '<p class="muted">No available requests match that search.</p>'}</div></div>`;
 }
 function renderDocumentModal(code) {
   const item = deliveredItems().find(entry => entry.code === code) || findRequest(code);
@@ -167,11 +169,13 @@ app.addEventListener("click", event => {
   if (event.target.closest("#evidence-sort")) return;
 });
 app.addEventListener("input", event => {
-  if (event.target.id !== "evidence-search") return;
-  state.evidenceSearch = event.target.value;
+  if (!["evidence-search", "request-search"].includes(event.target.id)) return;
+  const searchId = event.target.id;
+  if (searchId === "evidence-search") state.evidenceSearch = event.target.value;
+  if (searchId === "request-search") state.requestSearch = event.target.value;
   const cursor = event.target.selectionStart;
   render();
-  const replacement = document.querySelector("#evidence-search");
+  const replacement = document.querySelector(`#${searchId}`);
   if (replacement) { replacement.focus(); replacement.setSelectionRange(cursor, cursor); }
 });
 app.addEventListener("change", event => {
