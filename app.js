@@ -2,7 +2,7 @@ const app = document.querySelector("#app");
 let state;
 
 function resetState() {
-  state = { screen: "menu", day: 1, delivered: [], active: [], requested: {}, log: [], sentToday: false, attempts: 0, notice: null, selectedTab: "evidence", modal: null };
+  state = { screen: "menu", day: 1, delivered: [], receivedOrder: {}, active: [], requested: {}, log: [], sentToday: false, attempts: 0, notice: null, selectedTab: "evidence", modal: null, evidenceSearch: "", evidenceSort: "newest" };
 }
 resetState();
 
@@ -17,18 +17,20 @@ function deliverDue() {
   const due = state.active.filter(item => item.arrival === state.day);
   due.forEach(item => {
     state.delivered.push(item.code);
+    state.receivedOrder[item.code] = Object.keys(state.receivedOrder).length;
     addLog(`<strong>${esc(item.code)}</strong> delivered: ${esc(findRequest(item.code)?.title || item.title)}`);
   });
   state.active = state.active.filter(item => item.arrival !== state.day);
   automaticForDay(state.day).forEach(item => {
     state.delivered.push(item.code);
+    state.receivedOrder[item.code] = Object.keys(state.receivedOrder).length;
     addLog(`<strong>${esc(item.code)}</strong> released automatically: ${esc(item.title)}`);
   });
 }
 function deliveredItems() {
   const auto = CASE_001.automatic.filter(item => state.delivered.includes(item.code));
   const requested = state.delivered.map(findRequest).filter(Boolean);
-  return [...auto, ...requested];
+  return [...auto, ...requested].map(item => ({ ...item, receivedAt: state.receivedOrder[item.code] ?? 0 }));
 }
 function documentFor(item) {
   if (CASE_001_DOCUMENTS[item.code]) return CASE_001_DOCUMENTS[item.code];
@@ -120,7 +122,10 @@ function renderCase() {
 }
 function renderEvidence(items) {
   if (state.day === 1 && !items.length) return `<div class="panel"><div class="eyebrow">Day 1 briefing</div><h2>A plane overran a runway at Hobart.</h2><p>You are the lead investigator. The aircraft survived the event, but the cause is unknown. Review the material as it arrives, request additional evidence carefully, and submit a structured explanation before the deadline.</p><div class="notice">This is a fictional scenario and not a reconstruction of a real accident.</div></div>`;
-  return `<div class="panel"><div class="panel-heading"><div><div class="eyebrow">Received material</div><h2>Evidence desk</h2><p class="muted">Open a document to inspect the records, tables, and observations it contains.</p></div></div><div class="evidence-list">${items.length ? items.map(item => `<article class="evidence-card"><div class="card-top"><div><div class="code">${esc(item.code)}</div><h3>${esc(item.title)}</h3></div><span class="tag">received</span></div><p class="muted">Document package received and available for review.</p><button class="secondary" data-open-doc="${esc(item.code)}">Open document</button></article>`).join("") : '<p class="muted">No evidence has arrived yet. End the day to receive the next scheduled release.</p>'}</div></div>`;
+  const query = state.evidenceSearch.trim().toLowerCase();
+  const filtered = items.filter(item => !query || `${item.code} ${item.title}`.toLowerCase().includes(query));
+  const sorted = [...filtered].sort((a, b) => state.evidenceSort === "oldest" ? a.receivedAt - b.receivedAt : b.receivedAt - a.receivedAt);
+  return `<div class="panel"><div class="panel-heading"><div><div class="eyebrow">Received material</div><h2>Evidence desk</h2><p class="muted">Open a document to inspect the records, tables, and observations it contains.</p></div></div><div class="evidence-tools"><label class="search-field"><span class="sr-only">Search received evidence</span><input id="evidence-search" type="search" value="${esc(state.evidenceSearch)}" placeholder="Search code or evidence title"></label><label class="sort-field"><span class="sr-only">Sort evidence</span><select id="evidence-sort"><option value="newest" ${state.evidenceSort === "newest" ? "selected" : ""}>Newest first</option><option value="oldest" ${state.evidenceSort === "oldest" ? "selected" : ""}>Oldest first</option></select></label></div><p class="muted small">Showing ${sorted.length} of ${items.length} received document${items.length === 1 ? "" : "s"}.</p><div class="evidence-list">${sorted.length ? sorted.map(item => `<article class="evidence-card"><div class="card-top"><div><div class="code">${esc(item.code)}</div><h3>${esc(item.title)}</h3></div><span class="tag">received</span></div><p class="muted">Document package received and available for review.</p><button class="secondary" data-open-doc="${esc(item.code)}">Open document</button></article>`).join("") : '<p class="muted">No received evidence matches that search.</p>'}</div></div>`;
 }
 function renderRequests(items) {
   return `<div class="panel"><div class="panel-heading"><div><div class="eyebrow">Choose carefully</div><h2>Request evidence</h2><p class="muted">The arrival day is shown before you commit. Requests cannot be cancelled. The contents are not known until the package arrives.</p></div></div><div class="request-list">${items.map(request => { const check = canRequest(request); return `<article class="request-card"><div class="card-top"><div><div class="code">${request.code}</div><h3>${esc(request.title)}</h3></div><span class="tag">${request.duration} day${request.duration === 1 ? "" : "s"}</span></div><div class="request-meta"><span class="tag">arrives Day ${state.day + request.duration}</span></div><p class="muted">A case-specific ${esc(request.title.toLowerCase())} package will be prepared and delivered.</p><div class="request-actions"><span class="locked">${check.ok ? "Ready to request" : esc(check.reason)}</span><button class="secondary" data-request="${request.code}" ${check.ok ? "" : "disabled"}>Request</button></div></article>`; }).join("")}</div></div>`;
@@ -128,7 +133,7 @@ function renderRequests(items) {
 function renderDocumentModal(code) {
   const item = deliveredItems().find(entry => entry.code === code) || findRequest(code);
   const document = documentFor(item);
-  return `<div class="modal-backdrop" data-close-modal><section class="document-modal" role="dialog" aria-modal="true" aria-label="${esc(item.title)}" onclick="event.stopPropagation()"><header class="modal-header"><div><div class="code">${esc(item.code)}</div><h2>${esc(item.title)}</h2><p class="muted">Case 001 evidence document</p></div><button class="secondary" data-close-button>Close</button></header><div class="document-content">${document.sections.map(section => section.kind === "table" ? `<section><h3>${esc(section.heading)}</h3><div class="table-wrap"><table><thead><tr>${section.columns.map(column => `<th>${esc(column)}</th>`).join("")}</tr></thead><tbody>${section.rows.map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></section>` : `<section><h3>${esc(section.heading)}</h3><p class="evidence-body">${esc(section.content)}</p></section>`).join("")}</div></section></div>`;
+  return `<div class="modal-backdrop" data-close-modal><section class="document-modal" role="dialog" aria-modal="true" aria-label="${esc(item.title)}"><header class="modal-header"><div><div class="code">${esc(item.code)}</div><h2>${esc(item.title)}</h2><p class="muted">Case 001 evidence document</p></div><button type="button" class="secondary" data-close-button>Close</button></header><div class="document-content">${document.sections.map(section => section.kind === "table" ? `<section><h3>${esc(section.heading)}</h3><div class="table-wrap"><table><thead><tr>${section.columns.map(column => `<th>${esc(column)}</th>`).join("")}</tr></thead><tbody>${section.rows.map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></section>` : section.kind === "pre" ? `<section><h3>${esc(section.heading)}</h3><pre class="transcript">${esc(section.content)}</pre></section>` : `<section><h3>${esc(section.heading)}</h3><p class="evidence-body">${esc(section.content)}</p></section>`).join("")}</div></section></div>`;
 }
 function renderFindings() {
   const evidence = deliveredItems().filter(item => item.code && !["APT-01","DAT-00","CVR-01","WX-01","ATC-01","INT-01","WRK-00"].includes(item.code));
@@ -157,9 +162,25 @@ app.addEventListener("click", event => {
   if (code) requestEvidence(code);
   const openCode = event.target.closest("[data-open-doc]")?.dataset.openDoc;
   if (openCode) openDocument(openCode);
-  if (event.target.closest("[data-close-button]") || event.target.matches("[data-close-modal]")) closeDocument();
+  if (event.target.closest("[data-close-button]")) { event.stopPropagation(); return closeDocument(); }
+  if (event.target.matches("[data-close-modal]")) return closeDocument();
+  if (event.target.closest("#evidence-sort")) return;
+});
+app.addEventListener("input", event => {
+  if (event.target.id !== "evidence-search") return;
+  state.evidenceSearch = event.target.value;
+  const cursor = event.target.selectionStart;
+  render();
+  const replacement = document.querySelector("#evidence-search");
+  if (replacement) { replacement.focus(); replacement.setSelectionRange(cursor, cursor); }
+});
+app.addEventListener("change", event => {
+  if (event.target.id === "evidence-sort") { state.evidenceSort = event.target.value; render(); }
 });
 app.addEventListener("submit", event => {
   if (event.target.id === "findings-form") { event.preventDefault(); submitFindings(event.target); }
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && state.modal) closeDocument();
 });
 render();
