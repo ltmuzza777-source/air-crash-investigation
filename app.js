@@ -1,9 +1,8 @@
 const app = document.querySelector("#app");
-const roleLabels = { core: "Core", supporting: "Supporting", background: "Background", "rule-out": "Rule-out" };
 let state;
 
 function resetState() {
-  state = { screen: "menu", day: 1, delivered: [], active: [], requested: {}, log: [], sentToday: false, attempts: 0, notice: null, selectedTab: "evidence" };
+  state = { screen: "menu", day: 1, delivered: [], active: [], requested: {}, log: [], sentToday: false, attempts: 0, notice: null, selectedTab: "evidence", modal: null };
 }
 resetState();
 
@@ -31,6 +30,16 @@ function deliveredItems() {
   const requested = state.delivered.map(findRequest).filter(Boolean);
   return [...auto, ...requested];
 }
+function documentFor(item) {
+  if (CASE_001_DOCUMENTS[item.code]) return CASE_001_DOCUMENTS[item.code];
+  const request = findRequest(item.code);
+  return { sections: [
+    { heading: "Returned record extract", kind: "text", content: item.body || request?.body || "The requested record package has been received." },
+    { heading: "Package details", kind: "table", columns: ["Field", "Recorded value"], rows: [["Evidence code", item.code], ["Package title", item.title || request?.title], ["Delivery status", "Received"]] }
+  ] };
+}
+function openDocument(code) { state.modal = code; render(); }
+function closeDocument() { state.modal = null; render(); }
 function canRequest(request) {
   if (state.day < 2) return { ok: false, reason: "Available after the Day 1 briefing" };
   if (state.sentToday) return { ok: false, reason: "One new request per day" };
@@ -107,14 +116,19 @@ function renderCase() {
   const available = CASE_001.requests.filter(request => !state.requested[request.code]);
   const notice = state.notice ? `<div class="notice ${state.notice.kind}">${esc(state.notice.text)}</div>` : "";
   const tab = state.selectedTab;
-  app.innerHTML = `<div class="shell"><header class="topbar"><div><div class="eyebrow">Case 001</div><div class="brand">${esc(CASE_001.title)}</div></div><div class="day-pill">Day ${state.day} / ${CASE_001.deadline}</div></header>${notice}<div class="layout"><section><div class="tab-row"><button class="tab ${tab === "evidence" ? "active" : ""}" data-tab="evidence">Evidence (${evidence.length})</button><button class="tab ${tab === "requests" ? "active" : ""}" data-tab="requests">Request evidence</button><button class="tab ${tab === "findings" ? "active" : ""}" data-action="findings">Draft findings</button></div>${tab === "evidence" ? renderEvidence(evidence) : renderRequests(available)}</section><aside><div class="panel"><div class="panel-heading"><h3>Investigation status</h3></div><div class="stat-grid"><div class="stat"><strong>${state.active.length}</strong><span>active</span></div><div class="stat"><strong>${Object.keys(state.requested).length}</strong><span>requested</span></div><div class="stat"><strong>${3 - state.attempts}</strong><span>reports left</span></div></div><button class="primary" style="width:100%;margin-top:16px" data-action="advance">End Day ${state.day}</button><p class="muted small">Requests arrive at the start of their delivery day. You may send one new request per day and keep two active at a time.</p></div><div class="panel"><div class="panel-heading"><h3>Case log</h3></div><div class="log">${state.log.length ? state.log.map(item => `<div class="log-item"><strong>Day ${item.day}</strong><br>${item.message}</div>`).join("") : '<div class="muted">No events recorded.</div>'}</div></div></aside></div></div>`;
+  app.innerHTML = `<div class="shell"><header class="topbar"><div><div class="eyebrow">Case 001</div><div class="brand">${esc(CASE_001.title)}</div></div><div class="day-pill">Day ${state.day} / ${CASE_001.deadline}</div></header>${notice}<div class="layout"><section><div class="tab-row"><button class="tab ${tab === "evidence" ? "active" : ""}" data-tab="evidence">Evidence (${evidence.length})</button><button class="tab ${tab === "requests" ? "active" : ""}" data-tab="requests">Request evidence</button><button class="tab ${tab === "findings" ? "active" : ""}" data-action="findings">Draft findings</button></div>${tab === "evidence" ? renderEvidence(evidence) : renderRequests(available)}</section><aside><div class="panel"><div class="panel-heading"><h3>Investigation status</h3></div><div class="stat-grid"><div class="stat"><strong>${state.active.length}</strong><span>active</span></div><div class="stat"><strong>${Object.keys(state.requested).length}</strong><span>requested</span></div><div class="stat"><strong>${3 - state.attempts}</strong><span>reports left</span></div></div><button class="primary" style="width:100%;margin-top:16px" data-action="advance">End Day ${state.day}</button><p class="muted small">Requests arrive at the start of their delivery day. You may send one new request per day and keep two active at a time.</p></div><div class="panel"><div class="panel-heading"><h3>Case log</h3></div><div class="log">${state.log.length ? state.log.map(item => `<div class="log-item"><strong>Day ${item.day}</strong><br>${item.message}</div>`).join("") : '<div class="muted">No events recorded.</div>'}</div></div></aside></div>${state.modal ? renderDocumentModal(state.modal) : ""}</div>`;
 }
 function renderEvidence(items) {
   if (state.day === 1 && !items.length) return `<div class="panel"><div class="eyebrow">Day 1 briefing</div><h2>A plane overran a runway at Hobart.</h2><p>You are the lead investigator. The aircraft survived the event, but the cause is unknown. Review the material as it arrives, request additional evidence carefully, and submit a structured explanation before the deadline.</p><div class="notice">This is a fictional scenario and not a reconstruction of a real accident.</div></div>`;
-  return `<div class="panel"><div class="panel-heading"><div><div class="eyebrow">Received material</div><h2>Evidence desk</h2></div></div><div class="evidence-list">${items.length ? items.map(item => `<article class="evidence-card"><div class="card-top"><div><div class="code">${esc(item.code)}</div><h3>${esc(item.title)}</h3></div><span class="tag">received</span></div><div class="evidence-body">${esc(item.body)}</div></article>`).join("") : '<p class="muted">No evidence has arrived yet. End the day to receive the next scheduled release.</p>'}</div></div>`;
+  return `<div class="panel"><div class="panel-heading"><div><div class="eyebrow">Received material</div><h2>Evidence desk</h2><p class="muted">Open a document to inspect the records, tables, and observations it contains.</p></div></div><div class="evidence-list">${items.length ? items.map(item => `<article class="evidence-card"><div class="card-top"><div><div class="code">${esc(item.code)}</div><h3>${esc(item.title)}</h3></div><span class="tag">received</span></div><p class="muted">Document package received and available for review.</p><button class="secondary" data-open-doc="${esc(item.code)}">Open document</button></article>`).join("") : '<p class="muted">No evidence has arrived yet. End the day to receive the next scheduled release.</p>'}</div></div>`;
 }
 function renderRequests(items) {
-  return `<div class="panel"><div class="panel-heading"><div><div class="eyebrow">Choose carefully</div><h2>Request evidence</h2><p class="muted">The arrival day is shown before you commit. Requests cannot be cancelled.</p></div></div><div class="request-list">${items.map(request => { const check = canRequest(request); return `<article class="request-card"><div class="card-top"><div><div class="code">${request.code}</div><h3>${esc(request.title)}</h3></div><span class="tag">${request.duration} day${request.duration === 1 ? "" : "s"}</span></div><div class="request-meta"><span class="tag">${roleLabels[request.role]}</span><span class="tag">arrives Day ${state.day + request.duration}</span></div><p>${esc(request.body)}</p><div class="request-actions"><span class="locked">${check.ok ? "Ready to request" : esc(check.reason)}</span><button class="secondary" data-request="${request.code}" ${check.ok ? "" : "disabled"}>Request</button></div></article>`; }).join("")}</div></div>`;
+  return `<div class="panel"><div class="panel-heading"><div><div class="eyebrow">Choose carefully</div><h2>Request evidence</h2><p class="muted">The arrival day is shown before you commit. Requests cannot be cancelled. The contents are not known until the package arrives.</p></div></div><div class="request-list">${items.map(request => { const check = canRequest(request); return `<article class="request-card"><div class="card-top"><div><div class="code">${request.code}</div><h3>${esc(request.title)}</h3></div><span class="tag">${request.duration} day${request.duration === 1 ? "" : "s"}</span></div><div class="request-meta"><span class="tag">arrives Day ${state.day + request.duration}</span></div><p class="muted">A case-specific ${esc(request.title.toLowerCase())} package will be prepared and delivered.</p><div class="request-actions"><span class="locked">${check.ok ? "Ready to request" : esc(check.reason)}</span><button class="secondary" data-request="${request.code}" ${check.ok ? "" : "disabled"}>Request</button></div></article>`; }).join("")}</div></div>`;
+}
+function renderDocumentModal(code) {
+  const item = deliveredItems().find(entry => entry.code === code) || findRequest(code);
+  const document = documentFor(item);
+  return `<div class="modal-backdrop" data-close-modal><section class="document-modal" role="dialog" aria-modal="true" aria-label="${esc(item.title)}" onclick="event.stopPropagation()"><header class="modal-header"><div><div class="code">${esc(item.code)}</div><h2>${esc(item.title)}</h2><p class="muted">Case 001 evidence document</p></div><button class="secondary" data-close-button>Close</button></header><div class="document-content">${document.sections.map(section => section.kind === "table" ? `<section><h3>${esc(section.heading)}</h3><div class="table-wrap"><table><thead><tr>${section.columns.map(column => `<th>${esc(column)}</th>`).join("")}</tr></thead><tbody>${section.rows.map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></section>` : `<section><h3>${esc(section.heading)}</h3><p class="evidence-body">${esc(section.content)}</p></section>`).join("")}</div></section></div>`;
 }
 function renderFindings() {
   const evidence = deliveredItems().filter(item => item.code && !["APT-01","DAT-00","CVR-01","WX-01","ATC-01","INT-01","WRK-00"].includes(item.code));
@@ -141,6 +155,9 @@ app.addEventListener("click", event => {
   if (tab) { state.selectedTab = tab; return render(); }
   const code = event.target.closest("[data-request]")?.dataset.request;
   if (code) requestEvidence(code);
+  const openCode = event.target.closest("[data-open-doc]")?.dataset.openDoc;
+  if (openCode) openDocument(openCode);
+  if (event.target.closest("[data-close-button]") || event.target.matches("[data-close-modal]")) closeDocument();
 });
 app.addEventListener("submit", event => {
   if (event.target.id === "findings-form") { event.preventDefault(); submitFindings(event.target); }
